@@ -38,9 +38,9 @@ export default function PlaylistsPage() {
     return 'Loading...';
   }
 
-  if (typeof window !== 'undefined') {
-    window.apiClient = apiClient;
-  }
+  // if (typeof window !== 'undefined') {
+  //   window.apiClient = apiClient;
+  // }
 
   return (
     <Wrap p={50} w="full" alignItems="center" justify="center" spacing={4}>
