@@ -1,4 +1,6 @@
-type GetSSRResult<TProps> =
+//github.com/vercel/next.js/issues/15913#issuecomment-912445809
+
+https: type GetSSRResult<TProps> =
   | { props: TProps }
   | { redirect: any }
   | { notFound: boolean };

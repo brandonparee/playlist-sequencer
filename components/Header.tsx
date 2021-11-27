@@ -1,221 +1,141 @@
-// Header.tsx
-import React, { useEffect, useMemo } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/router';
-import { getSession, signOut, useSession } from 'next-auth/react';
+import { ReactNode } from 'react';
+import NextLink from 'next/link';
+import {
+  Box,
+  Flex,
+  Avatar,
+  HStack,
+  Link,
+  IconButton,
+  Button,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  MenuDivider,
+  useDisclosure,
+  useColorModeValue,
+  Stack,
+  useColorMode,
+} from '@chakra-ui/react';
+import { FaSun, FaMoon } from 'react-icons/fa';
+import { HamburgerIcon, CloseIcon, AddIcon } from '@chakra-ui/icons';
+import { signOut, useSession } from 'next-auth/react';
 
-const Header: React.FC = () => {
-  const router = useRouter();
-  const isActive: (pathname: string) => boolean = (pathname) =>
-    router.pathname === pathname;
+const Links = [
+  {
+    label: 'Sequenced Playlists',
+    href: '/playlists',
+  },
+  {
+    label: 'Spotify Playlists',
+    href: '/playlists/new',
+  },
+];
 
-  const { data: session, status } = useSession();
-  const loading = status === 'loading';
+const NavLink = ({ href, children }: { children: ReactNode; href: string }) => (
+  <NextLink href={href} passHref>
+    <Link
+      px={2}
+      py={1}
+      rounded="md"
+      _hover={{
+        textDecoration: 'none',
+        bg: useColorModeValue('gray.200', 'gray.700'),
+      }}
+    >
+      {children}
+    </Link>
+  </NextLink>
+);
 
-  useEffect(() => {
-    const getData = async () => {
-      const session = await getSession();
-    };
+export default function Header() {
+  const { data: session } = useSession();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { toggleColorMode } = useColorMode();
+  const ThemeIcon = useColorModeValue(FaMoon, FaSun);
 
-    getData();
-  }, []);
-
-  let left = (
-    <div className="left">
-      <Link href="/">
-        <a className="bold" data-active={isActive('/')}>
-          Feed
-        </a>
-      </Link>
-      <style jsx>{`
-        .bold {
-          font-weight: bold;
-        }
-
-        a {
-          text-decoration: none;
-          color: var(--geist-foreground);
-          display: inline-block;
-        }
-
-        .left a[data-active='true'] {
-          color: gray;
-        }
-
-        a + a {
-          margin-left: 1rem;
-        }
-      `}</style>
-    </div>
-  );
-
-  let right = null;
-
-  if (loading) {
-    left = (
-      <div className="left">
-        <Link href="/">
-          <a className="bold" data-active={isActive('/')}>
-            Feed
-          </a>
-        </Link>
-        <style jsx>{`
-          .bold {
-            font-weight: bold;
-          }
-
-          a {
-            text-decoration: none;
-            color: var(--geist-foreground);
-            display: inline-block;
-          }
-
-          .left a[data-active='true'] {
-            color: gray;
-          }
-
-          a + a {
-            margin-left: 1rem;
-          }
-        `}</style>
-      </div>
-    );
-    right = (
-      <div className="right">
-        <p>Validating session ...</p>
-        <style jsx>{`
-          .right {
-            margin-left: auto;
-          }
-        `}</style>
-      </div>
-    );
-  }
-
-  if (!session) {
-    right = (
-      <div className="right">
-        <Link href="/api/auth/signin">
-          <a data-active={isActive('/signup')}>Log in</a>
-        </Link>
-        <style jsx>{`
-          a {
-            text-decoration: none;
-            color: var(--geist-foreground);
-            display: inline-block;
-          }
-
-          a + a {
-            margin-left: 1rem;
-          }
-
-          .right {
-            margin-left: auto;
-          }
-
-          .right a {
-            border: 1px solid var(--geist-foreground);
-            padding: 0.5rem 1rem;
-            border-radius: 3px;
-          }
-        `}</style>
-      </div>
-    );
-  }
-
-  if (session?.user) {
-    left = (
-      <div className="left">
-        <Link href="/">
-          <a className="bold" data-active={isActive('/')}>
-            Feed
-          </a>
-        </Link>
-        <Link href="/drafts">
-          <a data-active={isActive('/drafts')}>My drafts</a>
-        </Link>
-        <style jsx>{`
-          .bold {
-            font-weight: bold;
-          }
-
-          a {
-            text-decoration: none;
-            color: var(--geist-foreground);
-            display: inline-block;
-          }
-
-          .left a[data-active='true'] {
-            color: gray;
-          }
-
-          a + a {
-            margin-left: 1rem;
-          }
-        `}</style>
-      </div>
-    );
-    right = (
-      <div className="right">
-        <p>
-          {session.user.name} ({session.user.email})
-        </p>
-        <Link href="/create">
-          <button>
-            <a>New post</a>
-          </button>
-        </Link>
-        <button onClick={() => signOut()}>
-          <a>Log out</a>
-        </button>
-        <style jsx>{`
-          a {
-            text-decoration: none;
-            color: var(--geist-foreground);
-            display: inline-block;
-          }
-
-          p {
-            display: inline-block;
-            font-size: 13px;
-            padding-right: 1rem;
-          }
-
-          a + a {
-            margin-left: 1rem;
-          }
-
-          .right {
-            margin-left: auto;
-          }
-
-          .right a {
-            border: 1px solid var(--geist-foreground);
-            padding: 0.5rem 1rem;
-            border-radius: 3px;
-          }
-
-          button {
-            border: none;
-          }
-        `}</style>
-      </div>
-    );
-  }
+  const isLoggedIn = !!session?.user;
 
   return (
-    <nav>
-      {left}
-      {right}
-      <style jsx>{`
-        nav {
-          display: flex;
-          padding: 2rem;
-          align-items: center;
-        }
-      `}</style>
-    </nav>
-  );
-};
+    <>
+      <Box bg={useColorModeValue('gray.100', 'gray.900')} px={4}>
+        <Flex h={16} alignItems="center" justifyContent="space-between">
+          <IconButton
+            size="md"
+            icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
+            aria-label="Open Menu"
+            display={{ md: 'none' }}
+            onClick={isOpen ? onClose : onOpen}
+          />
+          <HStack spacing={8} alignItems="center">
+            <Box>Playlist Sequencer</Box>
+            <HStack as="nav" spacing={4} display={{ base: 'none', md: 'flex' }}>
+              {Links.map(({ label, href }) => (
+                <NavLink key={label} href={href}>
+                  {label}
+                </NavLink>
+              ))}
+            </HStack>
+          </HStack>
+          <Flex alignItems="center">
+            {isLoggedIn && (
+              <NextLink href="/playlists/new" passHref>
+                <Button
+                  as="a"
+                  variant="solid"
+                  colorScheme="green"
+                  size="sm"
+                  mr={4}
+                  leftIcon={<AddIcon />}
+                >
+                  New Playlist
+                </Button>
+              </NextLink>
+            )}
+            <IconButton
+              mr={4}
+              size="sm"
+              icon={<ThemeIcon />}
+              aria-label="Toggle theme"
+              onClick={toggleColorMode}
+            />
+            {isLoggedIn && (
+              <Menu>
+                <MenuButton
+                  as={Button}
+                  rounded="full"
+                  variant="link"
+                  cursor="pointer"
+                  minW={0}
+                >
+                  <Avatar
+                    size="sm"
+                    src={session.user?.image ?? undefined}
+                    name={session.user?.name ?? undefined}
+                  />
+                </MenuButton>
+                <MenuList>
+                  {/* <MenuDivider /> */}
+                  <MenuItem onClick={() => signOut()}>Sign Out</MenuItem>
+                </MenuList>
+              </Menu>
+            )}
+          </Flex>
+        </Flex>
 
-export default Header;
+        {isOpen ? (
+          <Box pb={4} display={{ md: 'none' }}>
+            <Stack as="nav" spacing={4}>
+              {Links.map(({ label, href }) => (
+                <NavLink key={label} href={href}>
+                  {label}
+                </NavLink>
+              ))}
+            </Stack>
+          </Box>
+        ) : null}
+      </Box>
+    </>
+  );
+}

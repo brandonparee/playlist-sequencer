@@ -19,7 +19,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   };
 }
 
-export default function PlaylistsPage() {
+function NewPlaylistPage() {
   const { data } = useQuery('spotify-playlists', () =>
     apiClient.getSpotifyPlaylists()
   );
@@ -35,4 +35,6 @@ export default function PlaylistsPage() {
   );
 }
 
-PlaylistsPage.auth = true;
+NewPlaylistPage.auth = true;
+
+export default NewPlaylistPage;

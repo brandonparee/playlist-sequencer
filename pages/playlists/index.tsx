@@ -1,5 +1,6 @@
 import { Wrap, WrapItem } from '@chakra-ui/layout';
 import { Button } from '@chakra-ui/react';
+import Link from 'next/link';
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
 import { useCallback } from 'react';
 import { dehydrate, QueryClient, useQuery } from 'react-query';
@@ -21,7 +22,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   };
 }
 
-export default function PlaylistsPage() {
+function PlaylistsPage() {
   const { data, refetch } = useQuery('playlists', () =>
     apiClient.getUserPlaylists()
   );
@@ -44,6 +45,23 @@ export default function PlaylistsPage() {
 
   return (
     <Wrap p={50} w="full" alignItems="center" justify="center" spacing={4}>
+      <Link href="/playlists/new" passHref>
+        <WrapItem
+          as="a"
+          borderStyle="dashed"
+          borderColor="gray.400"
+          borderWidth={3}
+          w="xs"
+          minH="xs"
+          rounded="lg"
+          _hover={{
+            shadow: 'lg',
+            cursor: 'pointer',
+          }}
+        >
+          Create new
+        </WrapItem>
+      </Link>
       {data.map((singlePlaylist) => (
         <WrapItem key={singlePlaylist.id}>
           <PlaylistCard playlistData={singlePlaylist} showDescription={false}>
@@ -61,3 +79,5 @@ export default function PlaylistsPage() {
 }
 
 PlaylistsPage.auth = true;
+
+export default PlaylistsPage;

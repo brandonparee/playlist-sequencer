@@ -5,14 +5,23 @@ import Header from '../components/Header';
 import React, { useEffect } from 'react';
 import { NextComponentType, NextPageContext } from 'next';
 import { Hydrate, QueryClient, QueryClientProvider } from 'react-query';
+import theme from '../styles/theme';
+import { useRouter } from 'next/router';
 
 function Auth({ children }: React.PropsWithChildren<{}>) {
   const { data: session, status } = useSession();
+  const router = useRouter();
   const isUser = !!session?.user;
   useEffect(() => {
-    if (status === 'loading') return; // Do nothing while loading
-    // if (!isUser) signIn(); // If not authenticated, force log in
-  }, [isUser, status]);
+    // Do nothing while loading
+    if (status === 'loading') {
+      return;
+    }
+    if (!isUser) {
+      console.log('here');
+      router.replace('/');
+    }
+  }, [isUser, router, status]);
 
   if (isUser) {
     return children as React.ReactElement;
@@ -33,10 +42,12 @@ function MyApp({
 }: ExtendedAppProps) {
   const [queryClient] = React.useState(() => new QueryClient());
 
+  console.log(Component.auth);
+
   return (
     <QueryClientProvider client={queryClient}>
       <Hydrate state={pageProps.dehydratedState}>
-        <ChakraProvider>
+        <ChakraProvider theme={theme}>
           <SessionProvider session={session}>
             <Header />
             {Component.auth ? (

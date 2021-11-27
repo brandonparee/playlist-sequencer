@@ -1,3 +1,5 @@
+// https://codesandbox.io/s/chakra-ui-data-table-vfivp?file=/src/react-table-config.d.ts
+
 import {
   UseSortByColumnOptions,
   UseSortByColumnProps,
