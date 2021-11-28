@@ -3,6 +3,10 @@ import qs from 'qs';
 import { Playlist } from '.prisma/client';
 import { GetUserPlaylistResponse } from '../pages/api/playlist';
 import { GetUserPlaylistsResponse } from '../pages/api/playlists';
+import {
+  savePlaylistSequence,
+  SavePlaylistSequenceParams,
+} from '../pages/api/playlist-sequence';
 
 type IdQuery = {
   id: string;
@@ -65,6 +69,17 @@ export class ApiClient {
   getUserPlaylist(options: IdQuery) {
     return this.request<GetUserPlaylistResponse>(
       `playlist?${qs.stringify(options)}`
+    );
+  }
+
+  createPlaylistSequence(options: SavePlaylistSequenceParams) {
+    console.log(options);
+    return this.request<ReturnType<typeof savePlaylistSequence>>(
+      'playlist-sequence',
+      {
+        method: 'POST',
+        body: JSON.stringify(options),
+      }
     );
   }
 

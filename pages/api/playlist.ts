@@ -1,4 +1,4 @@
-import { Playlist } from '.prisma/client';
+import { Playlist, PlaylistSequence } from '.prisma/client';
 import { IncomingMessage } from 'http';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getSession } from 'next-auth/react';
@@ -7,6 +7,7 @@ import { getSessionSpotifyClient } from '../../lib/spotify';
 
 export interface GetUserPlaylistResponse extends Playlist {
   spotifyData: SpotifyApi.SinglePlaylistResponse;
+  sequences: PlaylistSequence[];
 }
 
 export async function getUserPlaylist(
@@ -30,7 +31,7 @@ export async function getUserPlaylist(
       },
     },
     include: {
-      links: true,
+      sequences: true,
     },
     rejectOnNotFound: true,
   });
