@@ -73,7 +73,6 @@ export class ApiClient {
   }
 
   createPlaylistSequence(options: SavePlaylistSequenceParams) {
-    console.log(options);
     return this.request<ReturnType<typeof savePlaylistSequence>>(
       'playlist-sequence',
       {

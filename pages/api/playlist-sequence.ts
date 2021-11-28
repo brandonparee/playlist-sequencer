@@ -2,6 +2,7 @@ import { IncomingMessage } from 'http';
 import { NextApiRequest, NextApiResponse } from 'next';
 import prisma from '../../lib/prisma';
 import { getSession } from 'next-auth/react';
+import { shufflePlaylist } from './shuffle-playlist';
 
 export type SavePlaylistSequenceParams = {
   uris?: string[];
@@ -14,8 +15,6 @@ export async function savePlaylistSequence(
 ) {
   const session = await getSession({ req });
   const { uris, playlistId } = query;
-
-  console.log(query);
 
   if (!uris || !playlistId) {
     return {
@@ -37,6 +36,8 @@ export async function savePlaylistSequence(
       playlistId,
     },
   });
+
+  await shufflePlaylist(req, { id: playlistId });
 
   return {
     status: 'Success',

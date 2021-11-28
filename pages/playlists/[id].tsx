@@ -51,6 +51,19 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   };
 }
 
+type TracksByUri = {
+  [k: string]: SpotifyApi.TrackObjectFull;
+};
+
+type PlaylistSequenceProps = {
+  sequence: string[];
+  tracksByUri: TracksByUri;
+};
+
+function PlaylistSequence({ sequence, tracksByUri }: PlaylistSequenceProps) {
+  return <p>Sequences here...</p>;
+}
+
 function ModifyPlaylistPage({
   id,
   queryString,
@@ -84,9 +97,7 @@ function ModifyPlaylistPage({
   const sequences = useMemo(() => data?.sequences ?? [], [data]);
 
   const sequenceTracks = useMemo(() => {
-    const tracksByUri: {
-      [uri: string]: SpotifyApi.TrackObjectFull;
-    } = {};
+    const tracksByUri: TracksByUri = {};
     if (!tracks.length) {
       return tracksByUri;
     }
@@ -106,8 +117,6 @@ function ModifyPlaylistPage({
 
     return tracksByUri;
   }, [tracks, sequences]);
-
-  console.log(sequenceTracks);
 
   const prefixColumns: Column<SpotifyApi.PlaylistTrackObject>[] = useMemo(
     () => [
@@ -190,9 +199,14 @@ function ModifyPlaylistPage({
       {creatingSequence && (
         <PlaylistTable data={tracks} prefixColumns={prefixColumns} />
       )}
-      {!creatingSequence && (
-        <Code>{JSON.stringify(data.sequences, null, 2)}</Code>
-      )}
+      {!creatingSequence &&
+        sequences.map((singleSequence) => (
+          <PlaylistSequence
+            key={singleSequence.id}
+            tracksByUri={sequenceTracks}
+            sequence={singleSequence.uris}
+          />
+        ))}
     </VStack>
   );
 }

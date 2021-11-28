@@ -4,6 +4,7 @@ import shuffle from 'lodash/shuffle';
 import prisma from '../../lib/prisma';
 import { getSessionSpotifyClient } from '../../lib/spotify';
 import { IncomingMessage } from 'http';
+import _, { cloneDeep, flatten, remove, trimEnd } from 'lodash';
 
 export async function shufflePlaylist(
   req: IncomingMessage,
@@ -35,6 +36,9 @@ export async function shufflePlaylist(
           email: session.user.email,
         },
       },
+      include: {
+        sequences: true,
+      },
       rejectOnNotFound: true,
     });
 
@@ -50,7 +54,24 @@ export async function shufflePlaylist(
       trackUriObjects
     );
 
-    const shuffledPlaylist = shuffle(trackIds);
+    let shuffledPlaylist = shuffle(trackIds);
+
+    playlist.sequences.forEach(({ uris }) => {
+      const tempArray: (string | string[])[] = cloneDeep(shuffledPlaylist);
+      const [first, ...rest] = uris;
+
+      remove(tempArray, (value) => {
+        if (typeof value === 'string') {
+          return rest.includes(value);
+        }
+      });
+
+      const index = tempArray.indexOf(first);
+      if (index) {
+        tempArray[index] = uris;
+      }
+      shuffledPlaylist = flatten(tempArray);
+    });
 
     await spotifyApi.addTracksToPlaylist(playlist.spotifyId, shuffledPlaylist);
 
@@ -71,7 +92,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   if (req.method === 'POST') {
-    const response = await shufflePlaylist(req, req.query);
+    const response = await shufflePlaylist(req, req.body);
 
     return res.status(200).json(response);
   } else {
