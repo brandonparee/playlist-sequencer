@@ -17,15 +17,14 @@ type OffsetLimitPaginationQuery = {
   limit?: number;
 };
 
-const defaultBasePath = process.env.NEXT_PUBLIC_VERCEL_URL
-  ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
-  : 'http://localhost:3000';
+const defaultBasePath =
+  process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000/api/';
 
 export class ApiClient {
   constructor(public basePath: string = defaultBasePath) {}
 
   request<T>(endpoint: string, options?: RequestInit): Promise<T> {
-    const url = new URL(`${this.basePath}/api/${endpoint}`);
+    const url = new URL(`${this.basePath}${endpoint}`);
     const headers = {
       'Content-type': 'application/json',
     };
