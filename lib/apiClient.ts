@@ -17,10 +17,9 @@ type OffsetLimitPaginationQuery = {
   limit?: number;
 };
 
-console.log(process.env.NEXT_PUBLIC_VERCEL_URL);
-
-const defaultBasePath =
-  process.env.NEXT_PUBLIC_VERCEL_URL ?? 'http://localhost:3000';
+const defaultBasePath = process.env.NEXT_PUBLIC_VERCEL_URL
+  ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+  : 'http://localhost:3000';
 
 export class ApiClient {
   constructor(public basePath: string = defaultBasePath) {}
