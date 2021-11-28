@@ -39,21 +39,22 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model PlaylistLink {
+model PlaylistSequence {
   id         String   @id @default(cuid())
   playlistId String
+  name       String?
   playlist   Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
-  sequence   String[]
+  uris       String[]
 }
 
 model Playlist {
-  id                  String         @id @default(cuid())
-  createdAt           DateTime       @default(now())
+  id                  String             @id @default(cuid())
+  createdAt           DateTime           @default(now())
   spotifyId           String
   clonedFromSpotifyId String
   userId              String
-  user                User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  links               PlaylistLink[]
+  user                User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sequences           PlaylistSequence[]
 }
 
 model User {
