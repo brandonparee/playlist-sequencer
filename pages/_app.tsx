@@ -1,6 +1,6 @@
 import type { AppProps } from 'next/app';
 import { SessionProvider, useSession } from 'next-auth/react';
-import { ChakraProvider } from '@chakra-ui/react';
+import { ChakraProvider, Container } from '@chakra-ui/react';
 import Header from '../components/Header';
 import React, { useEffect } from 'react';
 import { NextComponentType, NextPageContext } from 'next';
@@ -18,7 +18,6 @@ function Auth({ children }: React.PropsWithChildren<{}>) {
       return;
     }
     if (!isUser) {
-      console.log('here');
       router.replace('/');
     }
   }, [isUser, router, status]);
@@ -42,21 +41,21 @@ function MyApp({
 }: ExtendedAppProps) {
   const [queryClient] = React.useState(() => new QueryClient());
 
-  console.log(Component.auth);
-
   return (
     <QueryClientProvider client={queryClient}>
       <Hydrate state={pageProps.dehydratedState}>
         <ChakraProvider theme={theme}>
           <SessionProvider session={session}>
             <Header />
-            {Component.auth ? (
-              <Auth>
+            <Container width="full" maxW="7xl">
+              {Component.auth ? (
+                <Auth>
+                  <Component {...pageProps} />
+                </Auth>
+              ) : (
                 <Component {...pageProps} />
-              </Auth>
-            ) : (
-              <Component {...pageProps} />
-            )}
+              )}
+            </Container>
           </SessionProvider>
         </ChakraProvider>
       </Hydrate>

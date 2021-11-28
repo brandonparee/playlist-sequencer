@@ -6,9 +6,7 @@ import prisma from '../../lib/prisma';
 import { getSessionSpotifyClient } from '../../lib/spotify';
 
 export interface GetUserPlaylistsResponse extends Playlist {
-  name: string;
-  description: string | null;
-  images: SpotifyApi.ImageObject[];
+  spotifyData: SpotifyApi.SinglePlaylistResponse;
 }
 
 export async function getUserPlaylists(req: IncomingMessage) {
@@ -30,12 +28,12 @@ export async function getUserPlaylists(req: IncomingMessage) {
   const playlistsWithData = await Promise.all(
     playlists.map(async (playlist) => {
       const { body } = await spotifyApi.getPlaylist(playlist.spotifyId, {
-        fields: 'name,description,images',
+        fields: 'id,name,description,images',
       });
 
       return {
         ...playlist,
-        ...body,
+        spotifyData: body,
       } as GetUserPlaylistsResponse;
     })
   );

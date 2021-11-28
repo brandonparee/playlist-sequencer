@@ -1,3 +1,4 @@
+import { Playlist } from '.prisma/client';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getSession } from 'next-auth/react';
 import prisma from '../../lib/prisma';
@@ -5,7 +6,7 @@ import { getSessionSpotifyClient } from '../../lib/spotify';
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse<Playlist | null>
 ) {
   if (req.method === 'POST') {
     const session = await getSession({ req });
@@ -13,7 +14,7 @@ export default async function handler(
     const { id } = req.body;
 
     if (!session?.user?.email || !id || !spotifyApi) {
-      return res.status(403).json({});
+      return res.status(403).json(null);
     }
 
     const {
@@ -47,6 +48,6 @@ export default async function handler(
 
     return res.status(200).json(newPlaylist);
   } else {
-    return res.status(400).json({});
+    return res.status(400).json(null);
   }
 }

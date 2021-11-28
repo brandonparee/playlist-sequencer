@@ -1,5 +1,7 @@
 import fetch from 'isomorphic-unfetch';
 import qs from 'qs';
+import { Playlist } from '.prisma/client';
+import { GetUserPlaylistResponse } from '../pages/api/playlist';
 import { GetUserPlaylistsResponse } from '../pages/api/playlists';
 
 type IdQuery = {
@@ -50,7 +52,7 @@ export class ApiClient {
   }
 
   cloneSpotifyPlaylist(options: IdQuery) {
-    return this.request('clone-playlist', {
+    return this.request<Playlist>('clone-playlist', {
       body: JSON.stringify(options),
       method: 'POST',
     });
@@ -58,6 +60,12 @@ export class ApiClient {
 
   getUserPlaylists() {
     return this.request<GetUserPlaylistsResponse[]>('playlists');
+  }
+
+  getUserPlaylist(options: IdQuery) {
+    return this.request<GetUserPlaylistResponse>(
+      `playlist?${qs.stringify(options)}`
+    );
   }
 
   shuffleUserPlaylist(options: IdQuery) {

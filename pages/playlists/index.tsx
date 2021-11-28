@@ -1,5 +1,5 @@
-import { Wrap, WrapItem } from '@chakra-ui/layout';
-import { Button } from '@chakra-ui/react';
+import { Center, Text, VStack, Wrap, WrapItem } from '@chakra-ui/layout';
+import { Button, ButtonGroup } from '@chakra-ui/react';
 import Link from 'next/link';
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
 import { useCallback } from 'react';
@@ -7,6 +7,7 @@ import { dehydrate, QueryClient, useQuery } from 'react-query';
 import { PlaylistCard } from '../../components/PlaylistCard';
 import apiClient from '../../lib/apiClient';
 import { getUserPlaylists } from '../api/playlists';
+import { AddIcon } from '@chakra-ui/icons';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const queryClient = new QueryClient();
@@ -59,18 +60,33 @@ function PlaylistsPage() {
             cursor: 'pointer',
           }}
         >
-          Create new
+          <Center w="full" h="full">
+            <VStack>
+              <AddIcon w={8} h={8} />
+              <Text fontSize="xl" fontWeight={500}>
+                Create New
+              </Text>
+            </VStack>
+          </Center>
         </WrapItem>
       </Link>
       {data.map((singlePlaylist) => (
         <WrapItem key={singlePlaylist.id}>
-          <PlaylistCard playlistData={singlePlaylist} showDescription={false}>
-            <Button
-              onClick={() => shufflePlaylist(singlePlaylist.id)}
-              colorScheme="green"
-            >
-              Shuffle
-            </Button>
+          <PlaylistCard
+            playlistData={singlePlaylist.spotifyData}
+            showDescription={false}
+          >
+            <ButtonGroup mt={2}>
+              <Link href={`/playlists/${singlePlaylist.id}`} passHref>
+                <Button as="a">Modify Playlist</Button>
+              </Link>
+              <Button
+                onClick={() => shufflePlaylist(singlePlaylist.id)}
+                colorScheme="green"
+              >
+                Shuffle
+              </Button>
+            </ButtonGroup>
           </PlaylistCard>
         </WrapItem>
       ))}

@@ -1,6 +1,6 @@
 import NextLink from 'next/link';
 import { Image } from '@chakra-ui/image';
-import { Box, Link } from '@chakra-ui/layout';
+import { Box, Link, VStack } from '@chakra-ui/layout';
 import SanitizeHTML from './SanitizeHtml';
 import React from 'react';
 
@@ -25,9 +25,11 @@ export const PlaylistCard = ({
 
   return (
     <Box w="xs" shadow="lg" rounded="lg" overflow="hidden">
-      {image && <Image w="xs" h="xs" fit="cover" src={image} alt="avatar" />}
+      {image && (
+        <Image w="xs" h="xs" fit="cover" src={image} alt="Playlist Cover" />
+      )}
 
-      <Box py={5} px={5} textAlign="center">
+      <VStack py={5} px={5} spacing={4} textAlign="center">
         <NextLink href={`/playlist/${playlistData.id}`} passHref>
           <Link display="block" fontSize="2xl" fontWeight="bold">
             {playlistData.name}
@@ -37,7 +39,7 @@ export const PlaylistCard = ({
           <SanitizeHTML html={playlistData.description} />
         )}
         {children}
-      </Box>
+      </VStack>
     </Box>
   );
 };
